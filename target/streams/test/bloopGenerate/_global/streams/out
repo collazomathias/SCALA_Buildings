@@ -1,0 +1,4 @@
+[debug] [construction-project-test] Classpath dependencies List()
+[debug] [construction-project-test] Dependencies from configurations List(construction-project)
+[debug] Bloop wrote the configuration of project 'construction-project-test' to 'C:\Users\Mathi\Desktop\Scala\construction-project\.bloop\construction-project-test.json'
+[success] Generated .bloop\construction-project-test.json
