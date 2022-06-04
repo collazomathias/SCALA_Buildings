@@ -1,17 +1,17 @@
 package functions
 
 import inventory.Inventory
-import build.Build
-import build.Casa
-import build.Edificio
-import build.Lago
-import build.CanchaDeFutbol
-import build.Gimnasio
+import build._
 import citadel.Citadel
+import request.Request
+import buildorder.BuildOrder
+import java.util.Calendar
+import java.time.LocalDate
 
 trait Errors {
-  def getMissingMaterial(inventory : Inventory, build : Build) : Boolean
-  def getExistingCoords(citadel : Citadel, x : Integer, y : Integer) : Boolean
+    type Coordinate = Integer
+    def getMissingMaterial(inventory : Inventory, build : Build) : Boolean
+    def getExistingCoords(citadel : Citadel, x : Coordinate, y : Coordinate) : Boolean
 }
 
 object Errors extends Errors {
@@ -25,7 +25,7 @@ object Errors extends Errors {
         missing
     }
 
-    def getExistingCoords(citadel: Citadel, x: Integer, y: Integer): Boolean = {
+    def getExistingCoords(citadel: Citadel, x: Coordinate, y: Coordinate) : Boolean = {
         var existing = false
         citadel.ordersInProgress.foreach(build => {
             if(build.x_coord == x && build.y_coord == y) existing = true 
@@ -62,28 +62,66 @@ object Utils extends Utils {
 }
 
 trait Functions {
-    def createRequest(citadel : Citadel, inventory : Inventory, build : Build, x : Integer, y : Integer) : String
-    def addInventory(inventory : Inventory, quant : Integer) : Inventory
+    type Coordinate = Integer
+    def createRequest(citadel : Citadel, build : Build, x : Coordinate, y : Coordinate) : Citadel
+    def addInventory(citadel : Citadel, quant : Integer) : Citadel
+    def updateOrders(citadel : Citadel) : Citadel
 }
 
 object Functions extends Functions {
-    def createRequest(citadel : Citadel, inventory: Inventory, build: Build, x: Integer, y: Integer): String = {
-        var message = "You have processed the request successfully."
-        if(Errors.getMissingMaterial(inventory, build)) {
-            message = "There is not enough material to build."
+    def createRequest(citadel : Citadel, build: Build, x: Coordinate, y: Coordinate): Citadel = {
+        if(Errors.getMissingMaterial(citadel.inventory, build)) {
+            println("There is not enough material to build.")
+            return citadel
         } else if(Errors.getExistingCoords(citadel, x, y)) {
-            message = "A build already exists in that position."
+            println("A build already exists in that position.")
+            return citadel
         }
-        message
+        val request = Request(build, x, y)
+        val buildOrderDate = LocalDate.of(citadel.year, citadel.month, citadel.day).plusDays(1)
+        val buildOrderDay = buildOrderDate.getDayOfMonth()
+        val buildOrderMonth = buildOrderDate.getMonthValue()
+        val buildOrderYear = buildOrderDate.getYear()
+        val buildOrderFinishDate = LocalDate.of(buildOrderYear, buildOrderMonth, buildOrderDay).plusDays(build.buildingTime.toLong)
+        val buildOrderFinishDay = buildOrderFinishDate.getDayOfMonth()
+        val buildOrderFinishMonth = buildOrderFinishDate.getMonthValue()
+        val buildOrderFinishYear = buildOrderFinishDate.getYear()
+        val buildOrder = BuildOrder(build, x, y, buildOrderDay, buildOrderMonth, buildOrderYear, buildOrderFinishDay, buildOrderFinishMonth, buildOrderFinishYear, "Pending")
+        println("You have processed the request successfully.")
+        citadel.copy(ordersInProgress = citadel.ordersInProgress.appended(buildOrder), 
+                    requests = citadel.requests.appended(request),
+                    day = buildOrderFinishDay,
+                    month = buildOrderFinishMonth,
+                    year = buildOrderFinishYear,
+                    inventory = citadel.inventory.copy(cemento = citadel.inventory.cemento - build.necessaryCemento,
+                                                        grava = citadel.inventory.grava - build.necessaryGrava,
+                                                        arena = citadel.inventory.arena - build.necessaryArena,
+                                                        madera = citadel.inventory.madera - build.necessaryMadera,
+                                                        adobe = citadel.inventory.adobe - build.necessaryAdobe))
     }
 
-    def addInventory(inventory: Inventory, quant : Integer): Inventory = {
-        inventory.copy(
-            cemento = inventory.cemento + quant, 
-            grava = inventory.grava + quant, 
-            arena = inventory.arena + quant, 
-            madera = inventory.madera + quant, 
-            adobe = inventory.adobe + quant
-        )   
+    def addInventory(citadel : Citadel, quant : Integer): Citadel = {
+        citadel.copy(inventory = citadel.inventory.copy(cemento = citadel.inventory.cemento + quant,
+                                                        grava = citadel.inventory.grava + quant,
+                                                        arena = citadel.inventory.arena + quant,
+                                                        madera = citadel.inventory.madera + quant,
+                                                        adobe = citadel.inventory.adobe + quant))
+    }
+
+    def updateOrders(citadel: Citadel): Citadel = {
+        val trunced = citadel.ordersInProgress.take(1).head
+        if(trunced.status == "Pending" &&
+            LocalDate.now().getDayOfMonth() == trunced.startDay &&
+            LocalDate.now().getMonthValue() == trunced.startMonth &&
+            LocalDate.now().getYear() == trunced.startYear) {
+            val newCitadel = citadel.copy(ordersInProgress = citadel.ordersInProgress.drop(1))
+            return newCitadel.copy(ordersInProgress = List(trunced.copy(status = "In progress")) ++ newCitadel.ordersInProgress)
+        } else if(trunced.status == "In progress" &&
+            LocalDate.now().getDayOfMonth() == trunced.endDay &&
+            LocalDate.now().getMonthValue() == trunced.endMonth &&
+            LocalDate.now().getYear() == trunced.endYear) {
+            return citadel.copy(ordersInProgress = citadel.ordersInProgress.drop(1), finishedBuilds = citadel.finishedBuilds.appended((trunced.build, (trunced.x_coord, trunced.y_coord))))
+        }
+        citadel
     }
 }

@@ -3,11 +3,19 @@ import functions._
 import build._
 import citadel.Citadel
 import buildorder.BuildOrder
+import java.time.LocalDate
 
 object Main extends App {
-    val list : List[(Build, (Double, Double))] = List((Casa, (0,0)), (Edificio, (1,1)), (Lago, (2,2)))
-    val list2 : List[BuildOrder] = List(BuildOrder(Casa, 3, 3, 12, 6, 2022, 15, 6, 2022, "Pendiente"), BuildOrder(Edificio, 4, 4, 16, 6, 2022, 22, 6, 2022, "Pendiente"))
-    val citadel = Citadel(list, list2, 12, 6, 2022)
-    val inventory = Inventory(30, 30, 30, 30, 30)
-    println(Functions.createRequest(citadel, inventory, Edificio, 10, 10))
+    val inventory = Inventory(500, 500, 500, 500, 500)
+    val day = LocalDate.now().getDayOfMonth()
+    val month = LocalDate.now().getMonthValue()
+    val year = LocalDate.now().getYear()
+    val citadel = Citadel(List(), List(), List(), inventory, day, month, year)
+    val citadel2 = Functions.createRequest(citadel, Edificio, 5, 5)
+    val citadel3 = Functions.createRequest(citadel2, Casa, 6, 6)
+    val citadel4 = Functions.createRequest(citadel3, Edificio, 7, 7)
+    val citadel5 = Functions.createRequest(citadel4, Edificio, 8, 8)
+    //val citadel4 = Functions.updateOrders(citadel3)
+    //val citadel5 = Functions.updateOrders(citadel4)
+    println(citadel5)
 }
