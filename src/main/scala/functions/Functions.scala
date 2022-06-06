@@ -72,7 +72,7 @@ object Utils extends Utils {
             println("Finished builds:")
             citadel.finishedBuilds.foreach(build => {
                 build._1 match {
-                    case Casa => println(s"\tBuild type: Casa" +
+                    case Casa => println(s"\tBuild type: Casa\t" +
                         s"Coordinates: (${build._2._1}, ${build._2._2})")
                     case Edificio => println(s"\tBuild type: Edificio" +
                         s"Coordinates: (${build._2._1}, ${build._2._2})")
@@ -201,15 +201,15 @@ object Functions extends Functions {
         val day = LocalDate.now().getDayOfMonth()
         val month = LocalDate.now().getMonthValue()
         val year = LocalDate.now().getYear()
-        if(trunced.status == "Pending" &&
+        if(trunced.status == "Pending" && //Para probar funcionamiento hay que quitar las condiciones de fecha y hora.
             day == trunced.startDay &&
             month == trunced.startMonth &&
             year == trunced.startYear &&
             hour >= 6 &&
             hour <= 12) {
             val newCitadel = citadel.copy(ordersInProgress = citadel.ordersInProgress.drop(1))
-            return newCitadel.copy(ordersInProgress = List(trunced.copy(status = "In progress")) ++ newCitadel.ordersInProgress)
-        } else if(trunced.status == "In-progress" &&
+            return newCitadel.copy(ordersInProgress = List(trunced.copy(status = "In-progress")) ++ newCitadel.ordersInProgress)
+        } else if(trunced.status == "In-progress" && //Para probar funcionamiento hay que quitar las condiciones de fecha y hora.
             day == trunced.endDay &&
             month == trunced.endMonth &&
             year == trunced.endYear &&
