@@ -41,7 +41,7 @@ object Errors extends Errors {
 trait Utils {
   def getBuildType(build : Build) : String 
   def getFinishDate(citadel : Citadel) : String
-  def showInformation(citadel : Citadel) : Unit
+  def showInformation(citadel : Citadel) : Citadel
 }
 
 object Utils extends Utils {
@@ -61,7 +61,10 @@ object Utils extends Utils {
         date
     }
 
-    def showInformation(citadel: Citadel): Unit = {
+    def showInformation(citadel: Citadel): Citadel = {
+        println("|--------------------------------|")
+        println("|     Information of Citadel     |")
+        println("|--------------------------------|")
         println(s"Inventory: \n\tArena: ${citadel.inventory.arena} " +
             s"\n\tGrava: ${citadel.inventory.grava} " +
             s"\n\tCemento: ${citadel.inventory.cemento} " +
@@ -121,13 +124,14 @@ object Utils extends Utils {
             })
         }
         println(s"Building end date: ${citadel.day}/${citadel.month}/${citadel.year}.")
+        citadel
     }
 }
 
 trait Functions {
     type Coordinate = Integer
     def createRequest(citadel : Citadel, build : Build, x : Coordinate, y : Coordinate) : Citadel
-    def addInventory(citadel : Citadel, quant : Integer) : Citadel
+    def addInventory(citadel : Citadel, quant : Integer, material : String) : Citadel
     def updateOrders(citadel : Citadel) : Citadel
 }
 
@@ -187,12 +191,16 @@ object Functions extends Functions {
         
     }
 
-    def addInventory(citadel : Citadel, quant : Integer): Citadel = {
-        citadel.copy(inventory = citadel.inventory.copy(cemento = citadel.inventory.cemento + quant,
-            grava = citadel.inventory.grava + quant,
-            arena = citadel.inventory.arena + quant,
-            madera = citadel.inventory.madera + quant,
-            adobe = citadel.inventory.adobe + quant))
+    def addInventory(citadel : Citadel, quant : Integer, material : String): Citadel = {
+
+        material match {
+            case "Cemento" => citadel.copy(inventory = citadel.inventory.copy(cemento = citadel.inventory.cemento + quant))
+            case "Grava" => citadel.copy(inventory = citadel.inventory.copy(grava = citadel.inventory.grava + quant))
+            case "Arena" => citadel.copy(inventory = citadel.inventory.copy(arena = citadel.inventory.arena + quant))
+            case "Madera" => citadel.copy(inventory = citadel.inventory.copy(madera = citadel.inventory.madera + quant))
+            case "Adobe" => citadel.copy(inventory = citadel.inventory.copy(adobe = citadel.inventory.adobe + quant))
+            case _ => citadel
+        }
     }
 
     def updateOrders(citadel: Citadel): Citadel = {
@@ -208,6 +216,7 @@ object Functions extends Functions {
             hour >= 6 &&
             hour <= 12) {
             val newCitadel = citadel.copy(ordersInProgress = citadel.ordersInProgress.drop(1))
+            println("The order has been put in 'In-progress' status.")
             return newCitadel.copy(ordersInProgress = List(trunced.copy(status = "In-progress")) ++ newCitadel.ordersInProgress)
         } else if(trunced.status == "In-progress" && //Para probar funcionamiento hay que quitar las condiciones de fecha y hora.
             day == trunced.endDay &&
@@ -215,6 +224,7 @@ object Functions extends Functions {
             year == trunced.endYear &&
             hour >= 17 &&
             hour <= 23) {
+            println("The order has been completed.")
             return citadel.copy(ordersInProgress = citadel.ordersInProgress.drop(1), finishedBuilds = citadel.finishedBuilds.appended((trunced.build, (trunced.x_coord, trunced.y_coord))))
         }
         citadel

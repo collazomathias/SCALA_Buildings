@@ -1,4 +1,4 @@
-[debug] [construction-project-build] Classpath dependencies List()
-[debug] [construction-project-build] Dependencies from configurations List()
-[debug] Bloop wrote the configuration of project 'construction-project-build' to 'C:\Users\Mathi\Desktop\Scala\construction-project\project\.bloop\construction-project-build.json'
-[success] Generated .bloop\construction-project-build.json
+[0m[[0m[0mdebug[0m] [0m[0m[construction-project-build] Classpath dependencies List()[0m
+[0m[[0m[0mdebug[0m] [0m[0m[construction-project-build] Dependencies from configurations List()[0m
+[0m[[0m[0mdebug[0m] [0m[0mBloop wrote the configuration of project 'construction-project-build' to 'C:\Users\Mathi\Desktop\Scala\construction-project\project\.bloop\construction-project-build.json'[0m
+[0m[[0m[32msuccess[0m] [0m[0mGenerated .bloop\construction-project-build.json[0m
