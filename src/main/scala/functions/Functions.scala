@@ -204,26 +204,32 @@ object Functions extends Functions {
     }
 
     def updateOrders(citadel: Citadel): Citadel = {
+        if(citadel.ordersInProgress.isEmpty) {
+            println("There are no orders in progress.")
+            return citadel
+        }
         val trunced = citadel.ordersInProgress.take(1).head
         val hour = LocalDateTime.now().getHour()
         val day = LocalDate.now().getDayOfMonth()
         val month = LocalDate.now().getMonthValue()
         val year = LocalDate.now().getYear()
-        if(trunced.status == "Pending" && //Para probar funcionamiento hay que quitar las condiciones de fecha y hora.
-            day == trunced.startDay &&
-            month == trunced.startMonth &&
-            year == trunced.startYear &&
-            hour >= 6 &&
-            hour <= 12) {
+        if(trunced.status == "Pending"
+            // && day == trunced.startDay // Comentar esta línea para probar el cambio de estado
+            // && month == trunced.startMonth // Comentar esta línea para probar el cambio de estado
+            // && year == trunced.startYear // Comentar esta línea para probar el cambio de estado
+            // && hour >= 8 // Comentar esta línea para probar el cambio de estado
+            // && hour <= 12 // Comentar esta línea para probar el cambio de estado
+            ) {
             val newCitadel = citadel.copy(ordersInProgress = citadel.ordersInProgress.drop(1))
             println("The order has been put in 'In-progress' status.")
             return newCitadel.copy(ordersInProgress = List(trunced.copy(status = "In-progress")) ++ newCitadel.ordersInProgress)
-        } else if(trunced.status == "In-progress" && //Para probar funcionamiento hay que quitar las condiciones de fecha y hora.
-            day == trunced.endDay &&
-            month == trunced.endMonth &&
-            year == trunced.endYear &&
-            hour >= 17 &&
-            hour <= 23) {
+        } else if(trunced.status == "In-progress"
+            // && day == trunced.endDay // Comentar esta línea para probar el cambio de estado
+            // && month == trunced.endMonth // Comentar esta línea para probar el cambio de estado
+            // && year == trunced.endYear // Comentar esta línea para probar el cambio de estado
+            // && hour >= 18 // Comentar esta línea para probar el cambio de estado
+            // && hour <= 22 // Comentar esta línea para probar el cambio de estado
+            ) {
             println("The order has been completed.")
             return citadel.copy(ordersInProgress = citadel.ordersInProgress.drop(1), finishedBuilds = citadel.finishedBuilds.appended((trunced.build, (trunced.x_coord, trunced.y_coord))))
         }

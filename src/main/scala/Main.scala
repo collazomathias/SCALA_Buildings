@@ -6,6 +6,12 @@ import buildorder.BuildOrder
 import java.time.LocalDate
 import request.Request
 import scala.util.control.Breaks
+import scala.concurrent.Future
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.util.Success
+import scala.util.Failure
+import scala.concurrent.Await
+import scala.concurrent.duration.Duration
 
 object Main {
 
@@ -38,19 +44,25 @@ object Main {
             .foreach {
                 case "1" => {
                     menuCreateRequest(citadel)
-                    loop.break();
+                    loop.break()
                 }
                 case "2" => {
                     menuAddInventory(citadel)
-                    loop.break();
+                    loop.break()
                 }
                 case "3" => {
-                    menu(Functions.updateOrders(citadel))
-                    loop.break();
+                    val future = Future {
+                        menu(Functions.updateOrders(citadel))
+                    }
+                    Await.result(future, Duration.Inf)
+                    loop.break()
                 }
                 case "4" => {
-                    menu(Utils.showInformation(citadel))
-                    loop.break();
+                    val future = Future {
+                        menu(Utils.showInformation(citadel))
+                    }
+                    Await.result(future, Duration.Inf)
+                    loop.break()
                 }
                 case _ => println("Invalid option")
             }
@@ -58,7 +70,7 @@ object Main {
     }
 
     def menuCreateRequest(citadel : Citadel) {
-        val loop = new Breaks;
+        val loopMenuCreateRequest = new Breaks;
         println("|----------------------|")
         println("| Create a new request |")
         println("|----------------------|")
@@ -66,9 +78,10 @@ object Main {
         println("2 => Edificio")
         println("3 => Gimnasio")
         println("4 => Lago")
-        println("5 => Cancha de fútbol")
+        println("5 => Cancha de futbol")
         println("0 => Cancel")
-        loop.breakable {
+        println("Please enter an option: ")
+        loopMenuCreateRequest.breakable {
             Iterator.continually(io.StdIn.readLine.toString)
             .foreach {
                 case "1" => {
@@ -80,8 +93,11 @@ object Main {
                     val X = io.StdIn.readInt()
                     println("Please enter Y coordinate: ")
                     val Y = io.StdIn.readInt()
-                    menu(Functions.createRequest(citadel, Casa, X, Y))
-                    loop.break();
+                    val request = Future {
+                        menu(Functions.createRequest(citadel, Casa, X, Y))
+                    }
+                    Await.result(request, Duration.Inf)
+                    loopMenuCreateRequest.break()
                 }
                 case "2" => {
                     println("|----------------------|")
@@ -92,48 +108,60 @@ object Main {
                     val X = io.StdIn.readInt()
                     println("Please enter Y coordinate: ")
                     val Y = io.StdIn.readInt()
-                    menu(Functions.createRequest(citadel, Edificio, X, Y))
-                    loop.break();
+                    val request = Future {
+                        menu(Functions.createRequest(citadel, Edificio, X, Y))
+                    }
+                    Await.result(request, Duration.Inf)
+                    loopMenuCreateRequest.break()
                 }
                 case "3" => {
                     println("|----------------------|")
                     println("| Create a new request |")
                     println("|----------------------|")
-                    println("Type: Casa")
+                    println("Type: Gimnasio")
                     println("Please enter X coordinate: ")
                     val X = io.StdIn.readInt()
                     println("Please enter Y coordinate: ")
                     val Y = io.StdIn.readInt()
-                    menu(Functions.createRequest(citadel, Gimnasio, X, Y))
-                    loop.break();
+                    val request = Future {
+                        menu(Functions.createRequest(citadel, Gimnasio, X, Y))
+                    }
+                    Await.result(request, Duration.Inf)
+                    loopMenuCreateRequest.break()
                 }
                 case "4" => {
                     println("|----------------------|")
                     println("| Create a new request |")
                     println("|----------------------|")
-                    println("Type: Casa")
+                    println("Type: Lago")
                     println("Please enter X coordinate: ")
                     val X = io.StdIn.readInt()
                     println("Please enter Y coordinate: ")
                     val Y = io.StdIn.readInt()
-                    menu(Functions.createRequest(citadel, Lago, X, Y))
-                    loop.break();
+                    val request = Future {
+                        menu(Functions.createRequest(citadel, Lago, X, Y))
+                    }
+                    Await.result(request, Duration.Inf)
+                    loopMenuCreateRequest.break()
                 }
                 case "5" => {
                     println("|----------------------|")
                     println("| Create a new request |")
                     println("|----------------------|")
-                    println("Type: Casa")
+                    println("Type: Cancha de futbol")
                     println("Please enter X coordinate: ")
                     val X = io.StdIn.readInt()
                     println("Please enter Y coordinate: ")
                     val Y = io.StdIn.readInt()
-                    menu(Functions.createRequest(citadel, CanchaDeFutbol, X, Y))
-                    loop.break();
+                    val request = Future {
+                        menu(Functions.createRequest(citadel, CanchaDeFutbol, X, Y))
+                    }
+                    Await.result(request, Duration.Inf)
+                    loopMenuCreateRequest.break()
                 }
                 case "0" => {
                     menu(citadel)
-                    loop.break();
+                    loopMenuCreateRequest.break()
                 }
                 case _ => {
                     println("Invalid option")
@@ -143,7 +171,7 @@ object Main {
     }
 
     def menuAddInventory(citadel : Citadel) {
-        val loop = new Breaks;
+        val loopMenuAddInventory = new Breaks;
         println("|----------------------------|")
         println("| Add materials to inventory |")
         println("|----------------------------|")
@@ -153,7 +181,8 @@ object Main {
         println("4 => Madera")
         println("5 => Adobe")
         println("0 => Cancel")
-        loop.breakable {
+        println("Please enter an option: ")
+        loopMenuAddInventory.breakable {
             Iterator.continually(io.StdIn.readLine.toString)
             .foreach {
                 case "1" => {
@@ -163,8 +192,11 @@ object Main {
                     println("Material: Cemento")
                     println("Please enter a quantity: ")
                     val quant = io.StdIn.readInt()
-                    menu(Functions.addInventory(citadel, quant, "Cemento"))
-                    loop.break();
+                    val inventory = Future {
+                        menu(Functions.addInventory(citadel, quant, "Cemento"))
+                    }
+                    Await.result(inventory, Duration.Inf)
+                    loopMenuAddInventory.break()
                 }
                 case "2" => {
                     println("|----------------------------|")
@@ -173,8 +205,11 @@ object Main {
                     println("Material: Grava")
                     println("Please enter a quantity: ")
                     val quant = io.StdIn.readInt()
-                    menu(Functions.addInventory(citadel, quant, "Grava"))
-                    loop.break();
+                    val inventory = Future {
+                        menu(Functions.addInventory(citadel, quant, "Grava"))
+                    }
+                    Await.result(inventory, Duration.Inf)
+                    loopMenuAddInventory.break()
                 }
                 case "3" => {
                     println("|----------------------------|")
@@ -183,8 +218,11 @@ object Main {
                     println("Material: Arena")
                     println("Please enter a quantity: ")
                     val quant = io.StdIn.readInt()
-                    menu(Functions.addInventory(citadel, quant, "Arena"))
-                    loop.break();
+                    val inventory = Future {
+                        menu(Functions.addInventory(citadel, quant, "Arena"))
+                    }
+                    Await.result(inventory, Duration.Inf)
+                    loopMenuAddInventory.break()
                 }
                 case "4" => {
                     println("|----------------------------|")
@@ -193,8 +231,11 @@ object Main {
                     println("Material: Madera")
                     println("Please enter a quantity: ")
                     val quant = io.StdIn.readInt()
-                    menu(Functions.addInventory(citadel, quant, "Madera"))
-                    loop.break();
+                    val inventory = Future {
+                        menu(Functions.addInventory(citadel, quant, "Madera"))
+                    }
+                    Await.result(inventory, Duration.Inf)
+                    loopMenuAddInventory.break()
                 }
                 case "5" => {
                     println("|----------------------------|")
@@ -203,12 +244,15 @@ object Main {
                     println("Material: Adobe")
                     println("Please enter a quantity: ")
                     val quant = io.StdIn.readInt()
-                    menu(Functions.addInventory(citadel, quant, "Adobe"))
-                    loop.break();
+                    val inventory = Future {
+                        menu(Functions.addInventory(citadel, quant, "Adobe"))
+                    }
+                    Await.result(inventory, Duration.Inf)
+                    loopMenuAddInventory.break()
                 }
                 case "0" => {
                     menu(citadel)
-                    loop.break();
+                    loopMenuAddInventory.break()
                 }
                 case _ => {
                     println("Invalid option")
