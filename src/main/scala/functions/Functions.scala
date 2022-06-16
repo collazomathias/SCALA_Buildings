@@ -9,6 +9,13 @@ import java.util.Calendar
 import java.time.LocalDate
 import java.time.LocalDateTime
 
+trait Material
+object Cemento extends Material
+object Grava extends Material
+object Arena extends Material
+object Madera extends Material
+object Adobe extends Material
+
 trait Errors {
     type Coordinate = Integer
     def getMissingMaterial(inventory : Inventory, build : Build) : Boolean
@@ -75,15 +82,15 @@ object Utils extends Utils {
             println("Finished builds:")
             citadel.finishedBuilds.foreach(build => {
                 build._1 match {
-                    case Casa => println(s"\tBuild type: Casa\t" +
+                    case Casa => println(s"\tBuild type: ${getBuildType(Casa)}\t" +
                         s"Coordinates: (${build._2._1}, ${build._2._2})")
-                    case Edificio => println(s"\tBuild type: Edificio" +
+                    case Edificio => println(s"\tBuild type: ${getBuildType(Edificio)}" +
                         s"Coordinates: (${build._2._1}, ${build._2._2})")
-                    case Lago => println(s"\tBuild type: Lago" +
+                    case Lago => println(s"\tBuild type: ${getBuildType(Lago)}" +
                         s"Coordinates: (${build._2._1}, ${build._2._2})")
-                    case CanchaDeFutbol => println(s"\tBuild type: Cancha de fútbol" +
+                    case CanchaDeFutbol => println(s"\tBuild type: ${getBuildType(CanchaDeFutbol)}" +
                         s"Coordinates: (${build._2._1}, ${build._2._2})")
-                    case Gimnasio => println(s"\tBuild type: Gimnasio" +
+                    case Gimnasio => println(s"\tBuild type: ${getBuildType(Gimnasio)}" +
                         s"Coordinates: (${build._2._1}, ${build._2._2})")
                     case _ => println("\tBuild type not found")
                 }
@@ -94,27 +101,27 @@ object Utils extends Utils {
             println(s"Build orders:")
             citadel.ordersInProgress.foreach(order => {
                 order.build match {
-                    case Casa => println(s"\tBuild type: Casa" +
+                    case Casa => println(s"\tBuild type: ${getBuildType(Casa)}" +
                         s"\tCoordinates: (${order.x_coord},${order.y_coord})" +
                         s"\tStart day: ${order.startDay}/${order.startMonth}/${order.startYear}" +
                         s"\tEnd day: ${order.endDay}/${order.endMonth}/${order.endYear}" +
                         s"\tStatus: ${order.status}")
-                    case Edificio => println(s"\tBuild type: Edificio" +
+                    case Edificio => println(s"\tBuild type: ${getBuildType(Edificio)}" +
                         s"\tCoordinates: (${order.x_coord},${order.y_coord})" +
                         s"\tStart day: ${order.startDay}/${order.startMonth}/${order.startYear}" +
                         s"\tEnd day: ${order.endDay}/${order.endMonth}/${order.endYear}" +
                         s"\tStatus: ${order.status}")
-                    case Lago => println(s"\tBuild type: Lago" +
+                    case Lago => println(s"\tBuild type: ${getBuildType(Lago)}" +
                         s"\tCoordinates: (${order.x_coord},${order.y_coord})" +
                         s"\tStart day: ${order.startDay}/${order.startMonth}/${order.startYear}" +
                         s"\tEnd day: ${order.endDay}/${order.endMonth}/${order.endYear}" +
                         s"\tStatus: ${order.status}")
-                    case CanchaDeFutbol => println(s"\tBuild type: Cancha de fútbol" +
+                    case CanchaDeFutbol => println(s"\tBuild type: ${getBuildType(CanchaDeFutbol)}" +
                         s"\tCoordinates: (${order.x_coord},${order.y_coord})" +
                         s"\tStart day: ${order.startDay}/${order.startMonth}/${order.startYear}" +
                         s"\tEnd day: ${order.endDay}/${order.endMonth}/${order.endYear}" +
                         s"\tStatus: ${order.status}")
-                    case Gimnasio => println(s"\tBuild type: Gimnasio" +
+                    case Gimnasio => println(s"\tBuild type: ${getBuildType(Gimnasio)}" +
                         s"\tCoordinates: (${order.x_coord},${order.y_coord})" +
                         s"\tStart day: ${order.startDay}/${order.startMonth}/${order.startYear}" +
                         s"\tEnd day: ${order.endDay}/${order.endMonth}/${order.endYear}" +
@@ -131,7 +138,7 @@ object Utils extends Utils {
 trait Functions {
     type Coordinate = Integer
     def createRequest(citadel : Citadel, build : Build, x : Coordinate, y : Coordinate) : Citadel
-    def addInventory(citadel : Citadel, quant : Integer, material : String) : Citadel
+    def addInventory(citadel : Citadel, quant : Integer, material : Material) : Citadel
     def updateOrders(citadel : Citadel) : Citadel
 }
 
@@ -191,14 +198,14 @@ object Functions extends Functions {
         
     }
 
-    def addInventory(citadel : Citadel, quant : Integer, material : String): Citadel = {
+    def addInventory(citadel : Citadel, quant : Integer, material : Material): Citadel = {
 
         material match {
-            case "Cemento" => citadel.copy(inventory = citadel.inventory.copy(cemento = citadel.inventory.cemento + quant))
-            case "Grava" => citadel.copy(inventory = citadel.inventory.copy(grava = citadel.inventory.grava + quant))
-            case "Arena" => citadel.copy(inventory = citadel.inventory.copy(arena = citadel.inventory.arena + quant))
-            case "Madera" => citadel.copy(inventory = citadel.inventory.copy(madera = citadel.inventory.madera + quant))
-            case "Adobe" => citadel.copy(inventory = citadel.inventory.copy(adobe = citadel.inventory.adobe + quant))
+            case Cemento => citadel.copy(inventory = citadel.inventory.copy(cemento = citadel.inventory.cemento + quant))
+            case Grava => citadel.copy(inventory = citadel.inventory.copy(grava = citadel.inventory.grava + quant))
+            case Arena => citadel.copy(inventory = citadel.inventory.copy(arena = citadel.inventory.arena + quant))
+            case Madera => citadel.copy(inventory = citadel.inventory.copy(madera = citadel.inventory.madera + quant))
+            case Adobe => citadel.copy(inventory = citadel.inventory.copy(adobe = citadel.inventory.adobe + quant))
             case _ => citadel
         }
     }

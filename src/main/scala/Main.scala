@@ -193,7 +193,7 @@ object Main {
                     println("Please enter a quantity: ")
                     val quant = io.StdIn.readInt()
                     val inventory = Future {
-                        menu(Functions.addInventory(citadel, quant, "Cemento"))
+                        menu(Functions.addInventory(citadel, quant, Cemento))
                     }
                     Await.result(inventory, Duration.Inf)
                     loopMenuAddInventory.break()
@@ -206,7 +206,7 @@ object Main {
                     println("Please enter a quantity: ")
                     val quant = io.StdIn.readInt()
                     val inventory = Future {
-                        menu(Functions.addInventory(citadel, quant, "Grava"))
+                        menu(Functions.addInventory(citadel, quant, Grava))
                     }
                     Await.result(inventory, Duration.Inf)
                     loopMenuAddInventory.break()
@@ -219,7 +219,7 @@ object Main {
                     println("Please enter a quantity: ")
                     val quant = io.StdIn.readInt()
                     val inventory = Future {
-                        menu(Functions.addInventory(citadel, quant, "Arena"))
+                        menu(Functions.addInventory(citadel, quant, Arena))
                     }
                     Await.result(inventory, Duration.Inf)
                     loopMenuAddInventory.break()
@@ -232,7 +232,7 @@ object Main {
                     println("Please enter a quantity: ")
                     val quant = io.StdIn.readInt()
                     val inventory = Future {
-                        menu(Functions.addInventory(citadel, quant, "Madera"))
+                        menu(Functions.addInventory(citadel, quant, Madera))
                     }
                     Await.result(inventory, Duration.Inf)
                     loopMenuAddInventory.break()
@@ -245,7 +245,7 @@ object Main {
                     println("Please enter a quantity: ")
                     val quant = io.StdIn.readInt()
                     val inventory = Future {
-                        menu(Functions.addInventory(citadel, quant, "Adobe"))
+                        menu(Functions.addInventory(citadel, quant, Adobe))
                     }
                     Await.result(inventory, Duration.Inf)
                     loopMenuAddInventory.break()
